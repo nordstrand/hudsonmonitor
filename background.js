@@ -61,6 +61,7 @@ function checkResponse() {
         var response = JSON.parse(xhr.responseText);
         var topStatus = -1;
         if (response.jobs) {
+            //API call executed against a view of potentially multiple jobs
             jobs = response.jobs;
             if (localStorage.sorting == 'status') {
                 jobs.sort(sortByStatus);
@@ -69,6 +70,14 @@ function checkResponse() {
             }
             for (var i in response.jobs)
                 topStatus = Math.max(topStatus, STATUSES[response.jobs[i].color]);
+        } else if (response.color) {
+            //API call executed against a single job
+            jobs = [{
+                name  : response.name,
+                url   : response.url,
+                color : response.color
+            }];
+            topStatus = STATUSES[response.color];
         }
         handleSuccess(topStatus);
         return;
